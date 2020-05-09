@@ -1,0 +1,30 @@
+services:
+    GaylordP\ForumBundle\Controller\:
+        resource: '../../Controller'
+        tags: ['controller.service_arguments']
+        autoconfigure: true
+        autowire: true
+
+    GaylordP\ForumBundle\Repository\ForumRepository:
+        arguments:
+            - '@doctrine'
+        tags:
+            - 'doctrine.repository_service'
+
+    GaylordP\ForumBundle\Repository\ForumPostRepository:
+        arguments:
+            - '@doctrine'
+        tags:
+            - 'doctrine.repository_service'
+
+    GaylordP\ForumBundle\Repository\ForumSubjectRepository:
+        arguments:
+            - '@doctrine'
+        tags:
+            - 'doctrine.repository_service'
+
+    GaylordP\ForumBundle\Repository\ForumSubjectLastPostReadRepository:
+        arguments:
+            - '@doctrine'
+        tags:
+            - 'doctrine.repository_service'

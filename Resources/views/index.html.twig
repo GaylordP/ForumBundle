@@ -1,0 +1,83 @@
+{% extends 'forum/_template.html.twig' %}
+
+{% block title %}
+    {{ include('forum/_ico.html.twig', with_context = false) }}
+    {{ 'title.forum'|trans }}
+{% endblock %}
+
+{% block content %}
+    {{ parent() }}
+    <div class="table-responsive">
+        <table class="table table-hover table-striped table-body-border-left mb-0">
+            <thead>
+                <tr>
+                    <th scope="col" class="text-center">
+                        <i class="fas fa-star"></i>
+                    </th>
+                    <th scope="col">
+                        {{ 'label.forum'|trans }}
+                    </th>
+                    <th scope="col" class="text-center">
+                        {{ 'label.message_length'|trans }}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for forum in forums %}
+                    <tr class="border-{{ forum.color.slug }}">
+                        <td class="forum-ico">
+                            <i class="{{ forum.ico }} text-{{ forum.color.slug }}"></i>
+                        </td>
+                        <td class="forum-content">
+                            <a href="{{ path('forum_show',
+                                {
+                                    'slug': forum.slug,
+                                }
+                            ) }}"{% if forum.lastPost is null %} class="mb-0"{% endif %}>
+                                <p class="forum-name">
+                                    <strong class="color-bordered bg-{{ forum.color.slug }} swatch-{{ forum.color.slug }} border-{{ forum.color.slug }}">
+                                        {{ forum.name }}
+                                    </strong>
+                                </p>
+                                <p class="forum-description">
+                                    {{ forum.description }}
+                                </p>
+                            </a>
+                            {% if forum.lastPost %}
+                                <dl>
+                                    <dt>
+                                        {{ 'label.last_message'|trans }} :
+                                    </dt>
+                                    <dd>
+                                        {% set createdBy = forum.lastPost.createdBy %}
+                                        {% set createdByColor = createdBy.color.slug %}
+                                        {% set subject = forum.lastPost.forumSubject %}
+                                        {{ 'message.by_at_date_in'|trans({
+                                            '%by%': '<a href="'~ path('member_profile',
+                                                {
+                                                    'slug': createdBy.slug,
+                                                }
+                                            ) ~'" class="forum-tag-color bg-'~ createdByColor ~' border-'~ createdByColor ~' swatch-'~ createdByColor ~'">' ~ createdBy.username ~ '</a>',
+                                            '%date%': forum.lastPost.createdAt|format_datetime('full', 'short'),
+                                            '%in%': '<a href="' ~ path('forum_subject',
+                                                {
+                                                    'forum_slug': forum.slug,
+                                                    'subject_slug': subject.slug,
+                                                }
+                                            ) ~ '">' ~ subject.subject ~ '</a>',
+                                        })|raw }}
+                                    </dd>
+                                </dl>
+                            {% endif %}
+                        </td>
+                        <td class="forum-count">
+                            <span class="bg-{{ forum.color.slug }} swatch-{{ forum.color.slug }} border-{{ forum.color.slug }}">
+                            {{ forum.countPost }}
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'default/template/template.html.twig' %}
+
+{% block content %}
+    {% if block('breadcrumb_content') is not empty %}
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('forum') }}">
+                        {{ 'menu.forums'|trans }}
+                    </a>
+                </li>
+                {% block breadcrumb_content %}{% endblock %}
+            </ol>
+        </nav>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'forum/_template.html.twig' %}
+
+{% block title %}
+    <i class="{{ forum.ico }}"></i>
+    {{ subject.subject }}
+{% endblock %}
+
+{% block breadcrumb_content %}
+    <li class="breadcrumb-item">
+        <a href="{{ path('forum_show',
+            {
+                'slug': app.request.get('forum_slug'),
+            }
+        ) }}">
+            {{ forum.name }}
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        {{ subject.subject }}
+    </li>
+{% endblock %}
+
+{% block content %}
+    {{ parent() }}
+    <div class="table-responsive">
+        <table class="table table-hover table-striped table-body-border-left mb-0">
+            <thead>
+                <tr>
+                    <th scope="col" class="text-center">
+                        {{ 'label.user'|trans }}
+                    </th>
+                    <th scope="col">
+                        {{ 'label.message'|trans }}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in posts %}
+                    <tr class="border-{{ post.createdBy.color.slug }}">
+                        <td class="forum-author">
+                            {% set createdBy = post.createdBy %}
+                            {% set createdByColor = createdBy.color.slug %}
+                            <a href="{{ path('member_profile',
+                                {
+                                    'slug': createdBy.slug,
+                                }
+                            ) }}">
+                                <span class="bg-{{ createdByColor }} border-{{ createdByColor }} swatch-{{ createdByColor }}">
+                                    {{ createdBy.username }}
+                                </span>
+                                {{ include('user/_ico.html.twig',
+                                    {
+                                        'user': createdBy,
+                                        'size': 'forum-post',
+                                    },
+                                    with_context = false
+                                ) }}
+                            </a>
+                        </td>
+                        <td class="forum-post">
+                            <span class="forum-post-date">
+                                {{ post.createdAt|format_datetime('full', 'short')|capitalize }}
+                            </span>
+                            <span class="forum-post-content">
+                                {{ post.content|nl2br }}
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="forum-post-reply border-{{ forum.color.slug }}">
+        <h2 class="title-bordered border-{{ forum.color.slug }}">
+            {{ 'title.forum.post'|trans }}
+        </h2>
+        {% if app.user %}
+            {{ include('default/page/_new.html.twig',
+                {
+                    'form': form,
+                    'btn_attr': {
+                        'class': 'btn-' ~ forum.color.slug,
+                    },
+                    'label': 'action.forum.subject.reply'|trans,
+                },
+                with_context = false
+            ) }}
+        {% else %}
+            <div class="alert alert-danger">
+                <p>
+                    {{ 'forum.post.authenticated'|trans }}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

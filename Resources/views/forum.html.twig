@@ -1,0 +1,142 @@
+{% extends 'forum/_template.html.twig' %}
+
+{% block title %}
+    <i class="{{ forum.ico }}"></i>
+    {{ 'label.forum'|trans }} :
+    {{ forum.name }}
+{% endblock %}
+
+{% block breadcrumb_content %}
+    <li class="breadcrumb-item active" aria-current="page">
+        {{ forum.name }}
+    </li>
+{% endblock %}
+
+{% block content %}
+    {% set color = forum.color.slug %}
+    {{ parent() }}
+    {{ include('default/button/_new.html.twig',
+        {
+            'attr': {
+                'class': 'mb-3 btn-' ~ color,
+            },
+            'ico': 'fas fa-comment-plus',
+            'path': path('forum_subject_new',
+                {
+                    'slug': forum.slug,
+                }
+            ),
+            'label': 'action.forum.subject.new_link'|trans,
+        },
+        with_context = false
+    ) }}
+    <div class="table-responsive">
+        <table class="table table-hover table-striped table-body-border-left{% if false == subjects.paginator.hasToPaginate %} mb-0{% endif %}">
+            <thead>
+                <tr>
+                    <th scope="col">
+                        {{ 'label.subject'|trans }}
+                    </th>
+                    <th scope="col">
+                        {{ 'label.speakers'|trans }}
+                    </th>
+                    <th scope="col" class="text-center">
+                        {{ 'label.response_length'|trans }}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject in subjects.results %}
+                    <tr class="border-{{ color }}">
+                        <td class="forum-content">
+                            <a href="{{ path('forum_subject',
+                                {
+                                    'forum_slug': app.request.get('slug'),
+                                    'subject_slug': subject.slug,
+                                }
+                            ) }}">
+                                <strong class="forum-subject">
+                                    {{ subject.subject }}
+                                </strong>
+                                {% if true == subject.hasRead %}
+                                    <span class="badge badge-success">
+                                        {{ 'label.read'|trans }}
+                                    </span>
+                                {% endif %}
+                            </a>
+                            <dl>
+                                <dt>
+                                    {{ 'label.last_message'|trans }} :
+                                </dt>
+                                <dd>
+                                    {% set createdBy = subject.lastPost.createdBy %}
+                                    {% set createdByColor = createdBy.color.slug %}
+                                    {{ 'message.by_at_date'|trans({
+                                        '%by%': '<a href="' ~ path('member_profile',
+                                            {
+                                                'slug': createdBy.slug,
+                                            }
+                                        ) ~ '" class="forum-tag-color bg-'~ createdBy.color.slug ~' border-'~ createdBy.color.slug ~' swatch-'~ createdBy.color.slug ~'">' ~ createdBy.username ~ '</a>',
+                                        '%date%': subject.lastPost.createdAt|format_datetime('full', 'short'),
+                                    })|raw }}
+                                </dd>
+                            </dl>
+                        </td>
+                        <td class="align-middle">
+                            {% apply spaceless %}
+                                <ul class="list-users-round">
+                                    {% for user in subject.speaker %}
+                                        <li>
+                                            <a href='{{ path('member_profile',
+                                                {
+                                                    'slug': user.slug,
+                                                }
+                                            ) }}' data-toggle="tooltip" title="{{ user.username }}">
+                                                {{ include('user/_ico.html.twig',
+                                                    {
+                                                        'user': user,
+                                                        'size': 'forum-speaker',
+                                                    },
+                                                    with_context = false
+                                                ) }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endapply %}
+                        </td>
+                        <td class="forum-count">
+                            <span class="bg-{{ color }} swatch-{{ color }} border-{{ color }}">
+                                {{ subject.countReply }}
+                            </span>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr class="border-{{ color }}">
+                        <td colspan="3" class="text-center">
+                            {{ 'forum.subject.not_found'|trans({ '%name%': forum.name }) }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {{ include('default/pagination/_pagination.html.twig',
+        {
+            'title': 'title.member'|trans,
+            'paginator': subjects.paginator,
+            'path': 'forum_show_paginated',
+            'attr':
+                {
+                    'class': 'pagination-' ~ color,
+                }
+            ,
+            'routeParams':
+                {
+                    'slug': app.request.get('slug'),
+                }
+            ,
+        },
+        with_context = false
+    ) }}
+{% endblock %}

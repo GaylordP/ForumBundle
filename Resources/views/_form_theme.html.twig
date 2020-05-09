@@ -1,0 +1,19 @@
+{%- block _forum_subject_widget -%}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' mb-n3')|trim}) %}
+
+    {{ block('form_widget') }}
+{%- endblock -%}
+
+{%- block _forum_subject_forum_widget -%}
+    {% apply spaceless %}
+        <div class="form-color-row">
+            {{ block('choice_widget') }}
+        </div>
+    {% endapply %}
+{%- endblock -%}
+
+{%- block _forum_subject_forum_entry_widget -%}
+    {% set color = form.parent.vars.choices[name].data.color.slug %}
+    {% set ico = form.parent.vars.choices[name].data.ico %}
+    {{ block('app_color_widget') }}
+{%- endblock -%}

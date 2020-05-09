@@ -1,0 +1,37 @@
+{% extends 'forum/_template.html.twig' %}
+
+{% form_theme form 'forum/_form_theme.html.twig' %}
+
+{% block title %}
+    {{ include('forum/_ico.html.twig', with_context = false) }}
+    {{ 'title.forum.new'|trans }}
+{% endblock %}
+
+{% block breadcrumb_content %}
+    <li class="breadcrumb-item">
+        <a href="{{ path('forum_show',
+            {
+                'slug': app.request.get('slug'),
+            }
+        ) }}">
+            {{ forum.name }}
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        {{ 'title.forum.new'|trans }}
+    </li>
+{% endblock %}
+
+{% block content %}
+    {{ parent() }}
+    {{ include('default/page/_new.html.twig',
+        {
+            'form': form,
+            'btn_attr': {
+                'class': 'btn-' ~ forum.color.slug,
+            },
+            'label': 'action.forum.subject.new'|trans,
+        },
+        with_context = false
+    ) }}
+{% endblock %}
